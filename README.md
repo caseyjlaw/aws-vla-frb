@@ -10,15 +10,15 @@ This repo will be the home of code and documentation of the process of using AWS
 
 ## Plan
 - Move data 
--- AWS S3 bucket in place for public data set (`ska-vla-frb-pbs`).
--- All in NRAO archive, but we'd like to reduce the data transfer load there.
--- Some (~60 TB?) at NERSC, all of which should be copied to AWS.
--- It would be nice to publicize the availability of this somehow.
+  - AWS S3 bucket in place for public data set (`ska-vla-frb-pbs`).
+  - All in NRAO archive, but we'd like to reduce the data transfer load there.
+  - Some (~60 TB?) at NERSC, all of which should be copied to AWS.
+  - It would be nice to publicize the availability of this somehow.
 - Search data
--- `docker-machine` can provision AWS instances.
--- Docker image in place for search pipeline software.
--- Will need to set up persistent storage (AWS EBS) to hold visibility data and candidate files.
--- Could set up search pipeline that auto-detects data and next scan for processing.
--- Need process for saving snapshots, cleaning up old ones (to save $), and keeping track of search products
+  - `docker-machine` can provision AWS instances.
+  - Docker image in place for search pipeline software.
+  - Will need to set up persistent storage (AWS EBS) to hold visibility data and candidate files.
+  - Could set up search pipeline that auto-detects data and next scan for processing.
+  - Need process for saving snapshots, cleaning up old ones (to save $), and keeping track of search products
 - Visualize results
-- - Jupyter notebook for interactive plot with merged candidate results.
+  - Jupyter notebook for interactive plot with merged candidate results.
