@@ -2,9 +2,9 @@ FROM caseyjlaw/rtpipe-base
 MAINTAINER Casey Law <caseyjlaw@gmail.com>
 
 WORKDIR /work
-COPY setup.sh entrypoint.sh /
-COPY search.py rtpipe_cbe.conf /work/
+COPY setup.sh entrypoint.sh search.py /
 #COPY cleanup.py /
+COPY rtpipe_cbe.conf /work/
 EXPOSE 8888
 
 RUN ["/bin/bash", "/setup.sh"]
