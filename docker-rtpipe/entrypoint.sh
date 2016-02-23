@@ -19,11 +19,15 @@ cleanup <sdmname> -- run cleanup process and start jupyter session for visualiza
 fi
 
 command="$1"
+shift 
 
 if [ "$command" = search ] ; then
     cd /work
-    exec ls
-    exec python /search.py $2 $3
+    exec python /search.py $1 $2
+fi
+
+if [ "$command" = bash ] ; then
+    exec bash "$@"
 fi
 
 if [ "$command" = cleanup ] ; then
