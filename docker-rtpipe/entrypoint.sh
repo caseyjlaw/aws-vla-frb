@@ -21,9 +21,9 @@ fi
 command="$1"
 shift 
 
-if [ "$command" = search ] ; then
+if [ "$command" = control ] ; then
     cd /work
-    exec python /search.py $1 $2
+    exec /control.py "$@"
 fi
 
 if [ "$command" = bash ] ; then
