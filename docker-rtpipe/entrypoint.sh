@@ -12,7 +12,6 @@ set -e
 if [ -z "$1" -o "$1" = help ] ; then
     echo "You must supply a subcommand. Subcommands are:
 bash        -- Run a bash shell
-search <sdmname> <scannum> -- run rtpipe search pipeline for sdmname and scannum
 cleanup <sdmname> -- run cleanup process and start jupyter session for visualization
 "
     exit 1
@@ -21,19 +20,15 @@ fi
 command="$1"
 shift 
 
-if [ "$command" = control ] ; then
-    cd /work
-    exec /control.py "$@"
-fi
-
 if [ "$command" = bash ] ; then
     exec bash "$@"
-fi
-
-if [ "$command" = cleanup ] ; then
+else
     cd /work
-    exec jupyter notebook --notebook-dir=/work --no-browser --ip=0.0.0.0
+    if [ "$command" = cleanup ] ; then
+	exec jupyter notebook --notebook-dir=/work --no-browser --ip=0.0.0.0
+    else
+	exec /control.py "$command" "$@"
+    fi
 fi
 
-echo "Unrecognized command \"$command\"."
-exit 1
+
