@@ -57,6 +57,7 @@ def copyscan(sdmfile, scan, bucketname):
     assert sdmfile
     assert scan
     if not os.path.exists(sdmfile): copyskeleton(sdmfile, bucketname=bucketname)
+    if not os.path.exists(sdmfile + '.GN'): copygain(sdmfile, bucketname=bucketname)
 
     scans = getscans(sdmfile, bucketname=bucketname)
 
@@ -73,11 +74,14 @@ def copyscan(sdmfile, scan, bucketname):
 @cli.command('search')
 @click.argument('sdmfile')
 @click.argument('scan', type=int)
+#@click.option('--kwargs)' # TODO: optionally pass in kwargs to set_pipeline
 def search(sdmfile, scan):
     """ Search scan of sdmfile for transients. Uses rtpipe_cbe.conf file in repo. """
 
     import rtpipe.RT as rt
     import rtpipe.parsecands as pc
+
+    if not os.path.exists(sdmfile + '.GN'): copygain(sdmfile, bucketname=bucketname)
 
     d = rt.set_pipeline(sdmfile, scan, paramfile='rtpipe_cbe.conf',
                         fileroot=sdmfile, nologfile=True)
@@ -125,6 +129,21 @@ def copyskeleton(sdmfile, bucketname=bucketname):
             bucket.download_file(obj.key, obj.key)
     else:
         print('no metadata objects found for {}.'.format(sdmfile))
+
+
+def copygain(sdmfile, bucketname=bucketname):
+    """ Finds gainfile in s3 for given sdmfile """
+
+    assert sdmfile
+
+    bucket = s3.Bucket(bucketname)
+    gain_object = [obj for obj in bucket.objects.all()
+                  if sdmfile in obj.key and 'gains' in obj.key]
+    assert len(gain_object) == 1
+    gainpath = gain_object[0].key
+
+    print('Copying {}'.format(gainpath))
+    bucket.download_file(gainpath, os.path.basename(gainpath))
 
 
 if __name__ == '__main__':

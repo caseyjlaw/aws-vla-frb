@@ -20,6 +20,8 @@ fi
 command="$1"
 shift 
 
+mv /rtpipe_cbe.conf /work
+
 if [ "$command" = bash ] ; then
     exec bash "$@"
 else
