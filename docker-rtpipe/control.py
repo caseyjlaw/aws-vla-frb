@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-import click, os, boto3
+import click, os, glob, boto3
 
 s3 = boto3.resource('s3')
-bucketname = 'ska-vla-frb-pds'
+databucket = 'ska-vla-frb-pds'
+candsbucket = 'ska-vla-frb-cands'
 
 
 @click.group('control')
@@ -12,7 +13,7 @@ def cli():
 
 
 @cli.command()
-@click.option('--bucketname', default=bucketname)
+@click.option('--bucketname', default=databucket)
 @click.option('--sort', default=True)
 def listsdms(bucketname, sort):
     """ lists all sdms in the s3 bucket in MJD (time) order """
@@ -25,7 +26,7 @@ def listsdms(bucketname, sort):
 
 @cli.command()
 @click.argument('sdmfile')
-@click.option('--bucketname', default=bucketname)
+@click.option('--bucketname', default=databucket)
 def listscans(sdmfile, bucketname):
     """ Get dict of (scan, bdfnum) from Main.xml. Creates skeleton sdm file locally, if not available. """
 
@@ -50,7 +51,7 @@ def listscans(sdmfile, bucketname):
 @cli.command()
 @click.argument('sdmfile')
 @click.argument('scan', type=int)
-@click.option('--bucketname', default=bucketname)
+@click.option('--bucketname', default=databucket)
 def copyscan(sdmfile, scan, bucketname):
     """ Copies sdm plus bdf for single scan. """
 
@@ -71,29 +72,89 @@ def copyscan(sdmfile, scan, bucketname):
     bucket.download_file(sdmpath, sdmpath)
 
 
-@cli.command('search')
+@cli.command()
 @click.argument('sdmfile')
 @click.argument('scan', type=int)
-#@click.option('--kwargs)' # TODO: optionally pass in kwargs to set_pipeline
-def search(sdmfile, scan):
-    """ Search scan of sdmfile for transients. Uses rtpipe_cbe.conf file in repo. """
+def search(sdmfile, scan, **kwargs):
+    """ Search scan of sdmfile for transients. Uses rtpipe_cbe.conf file in repo. 
+
+    kwargs is passed directly to rt.set_pipeline to customize search.
+    """
 
     import rtpipe.RT as rt
     import rtpipe.parsecands as pc
 
-    if not os.path.exists(sdmfile + '.GN'): copygain(sdmfile, bucketname=bucketname)
+    if not os.path.exists(sdmfile + '.GN'): copygain(sdmfile, bucketname=databucket)
 
     d = rt.set_pipeline(sdmfile, scan, paramfile='rtpipe_cbe.conf',
-                        fileroot=sdmfile, nologfile=True)
+                        fileroot=sdmfile, nologfile=True, **kwargs)
     rt.pipeline(d, range(d['nsegments']))
     pc.merge_segments(sdmfile, scan)
 
+    backupproducts(sdmfile, scan, bucketname=candsbucket)
 
-@cli.command('cleanup')
-def cleanup():
-    """ Merge cands and noise files """
 
-    pass
+@cli.command()
+@click.argument('sdmfile')
+@click.option('--bucketname', default=candsbucket)
+def mergecands(sdmfile, bucketname):
+    """ Merge cands and noise files for given sdmfile """
+
+    import rtpipe.parsecands as pc
+
+    copyproducts(sdmfile, bucketname=bucketname)
+    pc.merge_cands(glob.glob('cands_{}*pkl'.format(sdmfile)), sdmfile)
+    pc.merge_noises(glob.glob('noise_{}*pkl'.format(sdmfile)), sdmfile)
+
+
+@cli.command()
+@click.argument('sdmfile')
+def jupyter(sdmfile):
+    """ Merge candidates and run jupyter notebook server to visualize. """
+
+    import subprocess, shutil
+    shutil.move('/base.ipynb', os.path.join('/work', '{}.ipynb'.format(sdmfile)))
+
+    subprocess.call(['jupyter', 'notebook', '--notebook-dir=/work', '--no-browser', '--ip=0.0.0.0'])
+
+
+@cli.command()
+@click.argument('sdmfile')
+@click.option('--bucketname', default=candsbucket)
+def savenotebook(sdmfile, bucketname):
+    """ Merge candidates and run jupyter notebook server to visualize. """
+
+    bucket = s3.Bucket(bucketname)
+    notebook = os.path.abspath('{}.ipynb'.format(sdmfile))
+    print('Copying {}'.format(notebook)
+    bucket.upload_file(notebook, os.path.join(sdmfile, os.path.basename(notebook)))
+
+
+def copyproducts(sdmfile, bucketname=candsbucket):
+    """ Copy all products for given sdmfile into instance for analysis. """
+
+    bucket = s3.Bucket(bucketname)
+    products = [obj for obj in bucket.objects.all()
+                if sdmfile in obj.key]
+
+    for product in products:
+        print('Copying {}'.format(product))
+        bucket.download_file(product, os.path.basename(product))
+
+
+def backupproducts(sdmfile, scan, bucketname=candsbucket):
+    """ Sync search products to s3 bucket for backup
+
+    sdmfile is original data name, which is used as directory to store products in s3.
+    productlist is list of files to back up (full path).
+    """
+
+    bucket = s3.Bucket(bucketname)
+    products = [os.path.abspath(prod) for prod in glob.glob('cands_{}_sc{}*'.format(sdmfile, scan)) + glob.glob('noise_{}_sc*'.format(sdmfile, scan))]
+    
+    for product in products:
+        print('Copying {}'.format(product))
+        bucket.upload_file(product, os.path.join(sdmfile, os.path.basename(product)))
 
 
 def getscans(sdmfile, bucketname):
@@ -108,7 +169,7 @@ def getscans(sdmfile, bucketname):
     return scans
 
 
-def copyskeleton(sdmfile, bucketname=bucketname):
+def copyskeleton(sdmfile, bucketname=databucket):
     """ Copies directory structure and metadata for sdm from s3 (no bdfs) """
 
     assert sdmfile
@@ -131,7 +192,7 @@ def copyskeleton(sdmfile, bucketname=bucketname):
         print('no metadata objects found for {}.'.format(sdmfile))
 
 
-def copygain(sdmfile, bucketname=bucketname):
+def copygain(sdmfile, bucketname=databucket):
     """ Finds gainfile in s3 for given sdmfile """
 
     assert sdmfile
