@@ -71,6 +71,15 @@ def copyscan(sdmfile, scan, bucketname):
     print('Copying {}'.format(sdmpath))
     bucket.download_file(sdmpath, sdmpath)
 
+    # check if data is zipped (done for NERSC data)
+    if '.gz' in sdmpath:
+        print('Unzipping {}'.format(sdmpath))
+        with gzip.open(zipfile, 'rb') as zf:
+            data = zf.read()
+
+        with gzip.open(zipfile[:-3], 'wb') as zf:
+            zf.write(data)
+
 
 @cli.command()
 @click.argument('sdmfile')
@@ -126,7 +135,7 @@ def savenotebook(sdmfile, bucketname):
 
     bucket = s3.Bucket(bucketname)
     notebook = os.path.abspath('{}.ipynb'.format(sdmfile))
-    print('Copying {}'.format(notebook)
+    print('Copying {}'.format(notebook))
     bucket.upload_file(notebook, os.path.join(sdmfile, os.path.basename(notebook)))
 
 
