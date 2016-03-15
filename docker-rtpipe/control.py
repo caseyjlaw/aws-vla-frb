@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import click, os, glob, boto3
+import click, os, glob, boto3, gzip
 
 s3 = boto3.resource('s3')
 databucket = 'ska-vla-frb-pds'
@@ -74,10 +74,10 @@ def copyscan(sdmfile, scan, bucketname):
     # check if data is zipped (done for NERSC data)
     if '.gz' in sdmpath:
         print('Unzipping {}'.format(sdmpath))
-        with gzip.open(zipfile, 'rb') as zf:
+        with gzip.open(sdmpath, 'rb') as zf:
             data = zf.read()
 
-        with gzip.open(zipfile[:-3], 'wb') as zf:
+        with gzip.open(sdmpath[:-3], 'wb') as zf:
             zf.write(data)
 
 
