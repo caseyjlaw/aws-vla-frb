@@ -77,8 +77,8 @@ def copyscan(sdmfile, scan, bucketname):
         with gzip.open(sdmpath, 'rb') as zf:
             data = zf.read()
 
-        with gzip.open(sdmpath[:-3], 'wb') as zf:
-            zf.write(data)
+        with open(sdmpath[:-3], 'wb') as nf:
+            nf.write(data)
 
 
 @cli.command()
@@ -110,6 +110,8 @@ def mergecands(sdmfile, bucketname):
     """ Merge cands and noise files for given sdmfile """
 
     import rtpipe.parsecands as pc
+    import logging
+    logging.basicConfig()
 
     copyproducts(sdmfile, bucketname=bucketname)
     pc.merge_cands(glob.glob('cands_{}*pkl'.format(sdmfile)), sdmfile)
@@ -143,12 +145,13 @@ def copyproducts(sdmfile, bucketname=candsbucket):
     """ Copy all products for given sdmfile into instance for analysis. """
 
     bucket = s3.Bucket(bucketname)
-    products = [obj for obj in bucket.objects.all()
+    products = [obj.key for obj in bucket.objects.all()
                 if sdmfile in obj.key]
 
     for product in products:
-        print('Copying {}'.format(product))
-        bucket.download_file(product, os.path.basename(product))
+        if not os.path.exists(os.path.basename(products[0])):
+            print('Copying {}'.format(product))
+            bucket.download_file(product, os.path.basename(product))
 
 
 def backupproducts(sdmfile, scan, bucketname=candsbucket):
