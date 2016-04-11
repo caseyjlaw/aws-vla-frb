@@ -9,7 +9,7 @@ import csv
 #subprocess.call("export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY", shell=True)
 
 def docker_rock(dockerMachine_name, listsdms_txt):
-     subprocess.call("docker run --rm -v ~/.aws/:/.aws caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
+     subprocess.call("docker run --rm caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
      with open(listsdms_txt, "r+") as outfile:
            sdmName_list = []
            '''Turning the content in the listsdms.txt in to a list of sdm file names. '''
