@@ -5,8 +5,8 @@ import csv
 
 def docker_rock(dockerMachine_name, listsdms_txt):
      subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
-     subprocess.call("docker-machine create " + strname + " --driver virtualbox", shell=True)
-     subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
+     subprocess.call("docker-machine create " + dockerMachine_name + " --driver virtualbox", shell=True)
+     subprocess.call("eval $(docker-machine env " + dockerMachine_name + ")", shell=True)
      subprocess.call("docker run --rm -v ~/.aws/:/.aws caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
      with open(listsdms_txt, "r+") as outfile:
            sdmName_list = []
