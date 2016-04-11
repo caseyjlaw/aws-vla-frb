@@ -2,6 +2,11 @@ import subprocess
 import sys
 import csv
 
+#These variables must be set before running the script
+#subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
+#subprocess.call("docker-machine create " + strname + " --driver virtualbox", shell=True)
+#subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
+#subprocess.call("export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY", shell=True)
 
 def docker_rock(dockerMachine_name, listsdms_txt):
      subprocess.call("docker run --rm -v ~/.aws/:/.aws caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
