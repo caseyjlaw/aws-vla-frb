@@ -17,7 +17,7 @@ def docker_rock(dockerMachine_name, listsdms_txt):
                  sdmName_list = line.replace("[", "").replace("]", "").replace("u", "").replace("'", "").split(",")
                  
      '''do the list scan for each single sdm file and append the result into target.csv'''
-     with open("target.csv", "w+") as targetFile:
+     with open("target.csv", "a") as targetFile:
           targetWriter = csv.writer(targetFile, lineterminator = "\n")
           targetWriter.writerow(["sdmName"] + ["scan number"] + ['type'] + ["size"])
      for sdmName in sdmName_list:
