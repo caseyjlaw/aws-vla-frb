@@ -3,7 +3,7 @@ import sys
 import csv
 
 
-def docker_rock(dockerMachine_name, listsdms_txt):
+def readin(dockerMachine_name, listsdms_txt):
      subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
      subprocess.call("docker-machine create " + strname + " --driver virtualbox", shell=True)
      subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
@@ -93,7 +93,23 @@ def test_single_file_scan():
 
 dockerMachine_name = str(sys.argv[1]) #search
 listsdms_txt = str(sys.argv[2]) #listsdms.txt
-docker_rock(dockerMachine_name, listsdms_txt)
+#only run one of the tests below at a time
+#readin(dockerMachine_name, listsdms_txt)
+#test_single_file_scan()
+sdmName = str(sys.argv[1])
+tempoutput_txt = str(sys.argv[2])
+with open("target.csv", "w+") as targetFile:
+           targetWriter = csv.writer(targetFile, lineterminator = "\n")
+           targetWriter.writerow(["sdmName"] + ["scan number"] + ['type'] + ["size"])
+with open("complete.csv", "w+") as completeFile:
+     completeWriter = csv.writer(completeFile, lineterminator = "\n")
+     completeWriter.writerow(["sdmName"] + ["scan number"])
+filter_target(tempoutput_txt, sdmName)
+for _ in range(1, 10):
+     a = next_to_search()
+     add_finish_to_complete(a[0], a[1])
 
+b = next_to_search()
+print(b)
                                   
                 
