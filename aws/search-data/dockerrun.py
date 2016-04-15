@@ -2,12 +2,22 @@ import subprocess
 import sys
 import csv
 
+#These variables must be set before running the script
+#subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
+#subprocess.call("docker-machine create " + strname + " --driver virtualbox", shell=True)
+#subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
+#subprocess.call("export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY", shell=True)
 
+<<<<<<< HEAD
 def readin(dockerMachine_name, listsdms_txt):
      subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
      subprocess.call("docker-machine create " + strname + " --driver virtualbox", shell=True)
      subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
      subprocess.call("docker run --rm -v ~/.aws/:/.aws caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
+=======
+def docker_rock(dockerMachine_name, listsdms_txt):
+     subprocess.call("docker run --rm caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
+>>>>>>> 6ed99c428672660d54811d92c79bf51b90afc216
      with open(listsdms_txt, "r+") as outfile:
            sdmName_list = []
            '''Turning the content in the listsdms.txt in to a list of sdm file names. '''
@@ -15,7 +25,7 @@ def readin(dockerMachine_name, listsdms_txt):
                  sdmName_list = line.replace("[", "").replace("]", "").replace("u", "").replace("'", "").split(",")
                  
      '''do the list scan for each single sdm file and append the result into target.csv'''
-     with open("target.csv", "w+") as targetFile:
+     with open("target.csv", "a") as targetFile:
           targetWriter = csv.writer(targetFile, lineterminator = "\n")
           targetWriter.writerow(["sdmName"] + ["scan number"] + ['type'] + ["size"])
      for sdmName in sdmName_list:
