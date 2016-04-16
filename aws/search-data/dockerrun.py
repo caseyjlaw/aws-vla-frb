@@ -2,22 +2,21 @@ import subprocess
 import sys
 import csv
 
+'''
+This script runs the listsdms and outputs all the sdm names to listsdms.txt. 
+Afterward, it does listscans to find the target and put it with its corresonding 
+sdmName in target.csv. Every time you run this script, a new header line will be
+appended into the complete.csv to indicate the beginning of each copyscan
+'''
+
 #These variables must be set before running the script
 #subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
 #subprocess.call("docker-machine create " + strname + " --driver virtualbox", shell=True)
 #subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
 #subprocess.call("export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY", shell=True)
 
-<<<<<<< HEAD
-def readin(dockerMachine_name, listsdms_txt):
-     subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
-     subprocess.call("docker-machine create " + strname + " --driver virtualbox", shell=True)
-     subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
-     subprocess.call("docker run --rm -v ~/.aws/:/.aws caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
-=======
-def docker_rock(dockerMachine_name, listsdms_txt):
+def docker_rock(machine_name, listsdms_txt):
      subprocess.call("docker run --rm caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
->>>>>>> 6ed99c428672660d54811d92c79bf51b90afc216
      with open(listsdms_txt, "r+") as outfile:
            sdmName_list = []
            '''Turning the content in the listsdms.txt in to a list of sdm file names. '''
@@ -37,7 +36,7 @@ def docker_rock(dockerMachine_name, listsdms_txt):
      '''fill in the code: do the search in here. use next_to_search() to get the next sdmfile and
         scan to run copyscan. Add the sdmfile and scan to the complete.csv after finish running
         copyscan on them.'''
-     with open("complete.csv", "w+") as completeFile:
+     with open("complete.csv", "a") as completeFile:
           completeWriter = csv.writer(completeFile, lineterminator = "\n")
           completeWriter.writerow(["sdmName"] + ["scan number"])
     
@@ -76,50 +75,8 @@ def next_to_search():
                     return rowtuple
      return False
 
-def test_single_file_scan():
-     '''the below section is JUST for testing the listscan command with the sample listsdms.txt we have at this point'''
-     filename = str(sys.argv[1])
-     with open(filename, "r+") as outfile:
-         sdmName_list = []
-         
-         #Turning the content in the listsdms.txt in to a list of sdm file names. 
-         for line in outfile:
-             sdmName_list = line.replace("[", "").replace("]", "").replace("u", "").replace("'", "").split(",")
-             
-         #do the list scan for each single sdm file and put the result into <sdmName>-target.csv
-         for sdmName in sdmName_list:
-               if ("gains" not in sdmName):
-                     temp_txt = sdmName + ".txt"
-                     target_csv = sdmName + "-target.csv"
-                     subprocess.call("docker run --rm $config caseyjlaw/rtpipe-aws listscans " + sdmName + " > " + temp_txt, shell=True)
-                     with open(temp_txt, "r") as tempFile, open(target_csv, "w+") as targetFile:
-                           targetWriter = csv.writer(targetFile, lineterminator = "\n")
-                           targetWriter.writerow(["scan number"] + ['type'] + ["size"])
-                           for line in tempFile:
-                                if ("TARGET" in line):
-                                     line = line.split(",")
-                                     targetWriter.writerow([line[0]] + [line[1]] + [line[2]])
-     return True
-
-dockerMachine_name = str(sys.argv[1]) #search
+machine_name = str(sys.argv[1]) #whatever machine you created
 listsdms_txt = str(sys.argv[2]) #listsdms.txt
-#only run one of the tests below at a time
-#readin(dockerMachine_name, listsdms_txt)
-#test_single_file_scan()
-sdmName = str(sys.argv[1])
-tempoutput_txt = str(sys.argv[2])
-with open("target.csv", "w+") as targetFile:
-           targetWriter = csv.writer(targetFile, lineterminator = "\n")
-           targetWriter.writerow(["sdmName"] + ["scan number"] + ['type'] + ["size"])
-with open("complete.csv", "w+") as completeFile:
-     completeWriter = csv.writer(completeFile, lineterminator = "\n")
-     completeWriter.writerow(["sdmName"] + ["scan number"])
-filter_target(tempoutput_txt, sdmName)
-for _ in range(1, 10):
-     a = next_to_search()
-     add_finish_to_complete(a[0], a[1])
-
-b = next_to_search()
-print(b)
+docker_rock(machine_name, listsdms_txt)
                                   
                 
