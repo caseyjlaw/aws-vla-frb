@@ -19,7 +19,7 @@ def next_to_search():
           completeRow = [(row['sdmName'], row['scan number']) for row in completeReader]
           for rowtuple in targetRow:
                if rowtuple not in completeRow:
-                    return rowtuple[0], rowtuple[1]
+                    print(rowtuple[0], rowtuple[1])
      return False
 
 next_to_search()

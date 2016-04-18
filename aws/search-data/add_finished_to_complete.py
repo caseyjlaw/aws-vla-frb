@@ -1,5 +1,6 @@
 import sys
 import csv
+import os
 
 '''
 This script is called after the copyscan finishes.
@@ -21,6 +22,8 @@ def add_finish_to_complete(sdmfile, scan):
           completeWriter.writerow([sdmfile] + [scan])
      return True
 
-sdmfile = str(sys.argv[1]) #whatever machine you created
-scan = str(sys.argv[2]) #listsdms.txt
+#sdmfile = str(sys.argv[1]) #whatever machine you created
+#scan = str(sys.argv[2]) #listsdms.txt
+sdmfile = os.environ['sdm']
+scan = os.environ['scan']
 add_finish_to_complete(sdmfile, scan)
