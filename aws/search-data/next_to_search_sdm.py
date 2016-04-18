@@ -19,6 +19,7 @@ def next_to_search_sdm():
           for rowtuple in targetRow:
                if rowtuple not in completeRow:
                     print(rowtuple[0])
+                    return True
      return False
 
 next_to_search_sdm()
