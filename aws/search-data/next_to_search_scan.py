@@ -19,6 +19,7 @@ def next_to_search_scan():
           for rowtuple in targetRow:
                if rowtuple not in completeRow:
                     print(rowtuple[1])
+                    return True
      return False
 
 next_to_search_scan()
