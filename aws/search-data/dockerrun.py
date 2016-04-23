@@ -15,14 +15,19 @@ appended into the complete.csv to indicate the beginning of each copyscan
 #subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
 #subprocess.call("export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY", shell=True)
 
-def docker_rock(machine_name, listsdms_txt):
-     subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
-     subprocess.call("docker run --rm -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
+'''
+$ docker-machine create --driver virtualbox jun
+$ eval $(docker-machine env jun)
+$ python dockerrun.py <machine_name> <output.txt>
+'''
+
+def docker_rock(machine_name, listsdms_txt = 'listsdms.txt'):
+     subprocess.call("docker run --rm caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
      with open(listsdms_txt, "r+") as outfile:
            sdmName_list = []
            '''Turning the content in the listsdms.txt in to a list of sdm file names. '''
            for line in outfile:
-                 sdmName_list = line.replace("[", "").replace("]", "").replace("u", "").replace("'", "").split(",")
+                 sdmName_list = line.replace("[", "").replace("]", "").replace("u", "").replace("'", "").replace(" ", "").split(",")
                  
      '''do the list scan for each single sdm file and append the result into target.csv'''
      with open("target.csv", "a") as targetFile:
@@ -31,7 +36,7 @@ def docker_rock(machine_name, listsdms_txt):
      for sdmName in sdmName_list:
           if ("gains" not in sdmName):
                temp_txt = sdmName + ".txt"
-               subprocess.call("docker run --rm -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY caseyjlaw/rtpipe-aws listscans " + sdmName + " > " + temp_txt, shell=True)
+               subprocess.call("docker run --rm $config caseyjlaw/rtpipe-aws listscans " + sdmName + " > " + temp_txt, shell=True)
                filter_target(temp_txt, sdmName)
 
      '''fill in the code: do the search in here. use next_to_search() to get the next sdmfile and
@@ -76,8 +81,10 @@ def next_to_search():
                     return rowtuple
      return False
 
-machine_name = str(sys.argv[1]) #whatever machine you created
-listsdms_txt = str(sys.argv[2]) #listsdms.txt
-docker_rock(machine_name, listsdms_txt)
-                                  
-                
+machine_name = str(sys.argv[1]) #whatever machine you created, not used in this script
+if (str(sys.argv[2])):
+  print("first")
+  docker_rock(machine_name, str(sys.argv[2]))
+else:
+  print("second")
+  docker_rock(machine_name)
