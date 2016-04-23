@@ -16,7 +16,8 @@ appended into the complete.csv to indicate the beginning of each copyscan
 #subprocess.call("export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY", shell=True)
 
 def docker_rock(machine_name, listsdms_txt):
-     subprocess.call("docker run --rm caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
+     subprocess.call("export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)", shell=True)
+     subprocess.call("docker run --rm -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY caseyjlaw/rtpipe-aws listsdms > listsdms.txt", shell=True)
      with open(listsdms_txt, "r+") as outfile:
            sdmName_list = []
            '''Turning the content in the listsdms.txt in to a list of sdm file names. '''
@@ -30,7 +31,7 @@ def docker_rock(machine_name, listsdms_txt):
      for sdmName in sdmName_list:
           if ("gains" not in sdmName):
                temp_txt = sdmName + ".txt"
-               subprocess.call("docker run --rm $config caseyjlaw/rtpipe-aws listscans " + sdmName + " > " + temp_txt, shell=True)
+               subprocess.call("docker run --rm -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY caseyjlaw/rtpipe-aws listscans " + sdmName + " > " + temp_txt, shell=True)
                filter_target(temp_txt, sdmName)
 
      '''fill in the code: do the search in here. use next_to_search() to get the next sdmfile and
