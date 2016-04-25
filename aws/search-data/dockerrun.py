@@ -77,7 +77,8 @@ def next_to_search():
      return False
 
 machine_name = str(sys.argv[1]) #whatever machine you created
-if (str(sys.argv[2])):
+if (len(sys.argv) == 3):
+  print("eneter")
   docker_rock(machine_name, str(sys.argv[2]))
 else:
   docker_rock(machine_name)
