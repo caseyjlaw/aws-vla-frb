@@ -14,7 +14,7 @@ def next_to_search_sdm():
      with open("complete.csv", "r") as completeFile, open("target.csv", "r") as targetFile:
           targetReader = csv.DictReader(targetFile)
           completeReader = csv.DictReader(completeFile)
-          targetRow = [(row['sdmName'], row['scan number']) for row in targetReader]
+          targetRow = [(row['sdmName'], row['scan number']) for row in targetReader if 'sdmName' not in row['sdmName']]
           completeRow = [(row['sdmName'], row['scan number']) for row in completeReader]
           for rowtuple in targetRow:
                if rowtuple not in completeRow:
