@@ -15,27 +15,33 @@ appended into the complete.csv to indicate the beginning of each copyscan
 #subprocess.call("eval $(docker-machine env " + strname + ")", shell=True)
 #subprocess.call("export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY", shell=True)
 
-def docker_rock(machine_name, listsdms_txt = "listsdms.txt"):
+def docker_rock(listsdms_txt = "listsdms.txt"):
      subprocess.call("docker run --rm -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY caseyjlaw/rtpipe-aws listsdms > " + listsdms_txt, shell=True)
+     print('Updated sdm list at {0}'.format(listsdms_txt))
+
      with open(listsdms_txt, "r+") as outfile:
            sdmName_list = []
            '''Turning the content in the listsdms.txt in to a list of sdm file names. '''
            for line in outfile:
                  sdmName_list = line.replace("[", "").replace(" ", "").replace("]", "").replace("u", "").replace("'", "").split(",")
+     print('Parsed sdm list from text into python')
 
      '''do the list scan for each single sdm file and append the result into target.csv'''
-     with open("target.csv", "a") as targetFile:
+     with open("target.csv", "w") as targetFile:
           targetWriter = csv.writer(targetFile, lineterminator = "\n")
           targetWriter.writerow(["sdmName"] + ["scan number"] + ['type'] + ["size"])
      for sdmName in sdmName_list:
           if ("gains" not in sdmName):
                temp_txt = sdmName + ".txt"
+               print('Writing scan list to {0}...'.format(temp_txt))
                subprocess.call("docker run --rm -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY caseyjlaw/rtpipe-aws listscans " + sdmName + " > " + temp_txt, shell=True)
                filter_target(temp_txt, sdmName)
 
      '''fill in the code: do the search in here. use next_to_search() to get the next sdmfile and
         scan to run copyscan. Add the sdmfile and scan to the complete.csv after finish running
         copyscan on them.'''
+
+     print('Adding header line to complete.csv')
      with open("complete.csv", "a") as completeFile:
           completeWriter = csv.writer(completeFile, lineterminator = "\n")
           completeWriter.writerow(["sdmName"] + ["scan number"])
@@ -75,9 +81,7 @@ def next_to_search():
                     return rowtuple
      return False
 
-machine_name = str(sys.argv[1]) #whatever machine you created
-if (len(sys.argv) == 3):
-  print("eneter")
-  docker_rock(machine_name, str(sys.argv[2]))
+if (len(sys.argv) == 2):
+  docker_rock(str(sys.argv[2]))
 else:
-  docker_rock(machine_name)
+  docker_rock()
