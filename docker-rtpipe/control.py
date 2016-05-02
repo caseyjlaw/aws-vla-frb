@@ -149,7 +149,7 @@ def copyproducts(sdmfile, bucketname=candsbucket):
                 if sdmfile in obj.key]
 
     for product in products:
-        if not os.path.exists(os.path.basename(products[0])):
+        if not os.path.exists(os.path.basename(product)):
             print('Copying {}'.format(product))
             bucket.download_file(product, os.path.basename(product))
 
