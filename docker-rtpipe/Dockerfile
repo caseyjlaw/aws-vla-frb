@@ -12,5 +12,6 @@ COPY base.ipynb control.py entrypoint.sh rtpipe_cbe.conf /
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /control.py
 
+ENV agdir /alnotebook
 ENTRYPOINT ["/entrypoint.sh"]
 
