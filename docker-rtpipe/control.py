@@ -55,21 +55,17 @@ def listscans(sdmfile, bucketname):
 def copyscan(sdmfile, scan, bucketname):
     """ Copies sdm plus bdf for single scan. """
 
-    assert sdmfile
-    assert scan
     if not os.path.exists(sdmfile): copyskeleton(sdmfile, bucketname=bucketname)
     if not os.path.exists(sdmfile + '.GN'): copygain(sdmfile, bucketname=bucketname)
 
     scans = getscans(sdmfile, bucketname=bucketname)
+    sdmpath = findbdf(sdmfile, scans[scan])
 
-    bucket = s3.Bucket(bucketname)
-    sdm_object = [obj for obj in bucket.objects.all()
-                  if sdmfile in obj.key and scans[scan] in obj.key]
-    assert len(sdm_object) == 1
-    sdmpath = sdm_object[0].key
-
-    print('Copying {}'.format(sdmpath))
-    bucket.download_file(sdmpath, sdmpath)
+    if not os.path.exists(sdmpath.rstrip('.gz')):
+        print('Copying {}'.format(sdmpath))
+        bucket.download_file(sdmpath, sdmpath)
+    else:
+        print('File {} already exists'.format(sdmpath))
 
     # check if data is zipped (done for NERSC data)
     if '.gz' in sdmpath:
@@ -94,6 +90,12 @@ def search(sdmfile, scan, **kwargs):
     import rtpipe.parsecands as pc
 
     if not os.path.exists(sdmfile + '.GN'): copygain(sdmfile, bucketname=databucket)
+
+    # if data not present, download it
+    scans = getscans(sdmfile, bucketname=databucket)
+    sdmpath = findbdf(sdmfile, scans[scan])
+    if not os.path.exists(sdmpath.rstrip('.gz')):
+        copyscan(sdmfile, scan, databucket)
 
     d = rt.set_pipeline(sdmfile, scan, paramfile='rtpipe_cbe.conf',
                         fileroot=sdmfile, nologfile=True, **kwargs)
@@ -167,6 +169,16 @@ def backupproducts(sdmfile, scan, bucketname=candsbucket):
     for product in products:
         print('Copying {}'.format(product))
         bucket.upload_file(product, os.path.join(sdmfile, os.path.basename(product)))
+
+
+def findbdf(sdmfile, bdfstr):
+
+    bucket = s3.Bucket(bucketname)
+    sdm_object = [obj for obj in bucket.objects.all()
+                  if sdmfile in obj.key and bdfstr in obj.key]
+    assert len(sdm_object) == 1
+    sdmpath = sdm_object[0].key
+    return sdmpath
 
 
 def getscans(sdmfile, bucketname):
