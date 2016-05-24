@@ -171,7 +171,7 @@ def backupproducts(sdmfile, scan, bucketname=candsbucket):
         bucket.upload_file(product, os.path.join(sdmfile, os.path.basename(product)))
 
 
-def findbdf(sdmfile, bdfstr):
+def findbdf(sdmfile, bdfstr, bucketname=databucket):
 
     bucket = s3.Bucket(bucketname)
     sdm_object = [obj for obj in bucket.objects.all()
