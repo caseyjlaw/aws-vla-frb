@@ -63,18 +63,19 @@ def copyscan(sdmfile, scan, bucketname=databucket):
 
     if not os.path.exists(sdmpath.rstrip('.gz')):
         print('Copying {}'.format(sdmpath))
+        bucket = s3.Bucket(bucketname)
         bucket.download_file(sdmpath, sdmpath)
+
+        # check if data is zipped (done for NERSC data)
+        if '.gz' in sdmpath:
+            print('Unzipping {}'.format(sdmpath))
+            with gzip.open(sdmpath, 'rb') as zf:
+                data = zf.read()
+
+            with open(sdmpath[:-3], 'wb') as nf:
+                nf.write(data)
     else:
-        print('File {} already exists'.format(sdmpath))
-
-    # check if data is zipped (done for NERSC data)
-    if '.gz' in sdmpath:
-        print('Unzipping {}'.format(sdmpath))
-        with gzip.open(sdmpath, 'rb') as zf:
-            data = zf.read()
-
-        with open(sdmpath[:-3], 'wb') as nf:
-            nf.write(data)
+        print('File {} already exists'.format(sdmpath.rstrip('.gz'))
 
 
 @cli.command()
