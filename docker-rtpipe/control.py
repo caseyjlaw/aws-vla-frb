@@ -75,7 +75,7 @@ def copyscan(sdmfile, scan, bucketname=databucket):
             with open(sdmpath[:-3], 'wb') as nf:
                 nf.write(data)
     else:
-        print('File {} already exists'.format(sdmpath.rstrip('.gz'))
+        print('File {} already exists'.format(sdmpath.rstrip('.gz')))
 
 
 @cli.command()
