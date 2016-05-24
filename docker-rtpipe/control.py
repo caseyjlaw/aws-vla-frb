@@ -48,11 +48,11 @@ def listscans(sdmfile, bucketname):
         print('Scan {}:{}, {}, {} GB'.format(sdm['Main'][row].scanNumber, sdm['Scan'][row].sourceName, intent, int(sdm['Main'][row].dataSize)/1024**3))
 
 
-@cli.command()
-@click.argument('sdmfile')
-@click.argument('scan', type=int)
-@click.option('--bucketname', default=databucket)
-def copyscan(sdmfile, scan, bucketname):
+#@cli.command()
+#@click.argument('sdmfile')
+#@click.argument('scan', type=int)
+#@click.option('--bucketname', default=databucket)
+def copyscan(sdmfile, scan, bucketname=databucket):
     """ Copies sdm plus bdf for single scan. """
 
     if not os.path.exists(sdmfile): copyskeleton(sdmfile, bucketname=bucketname)
