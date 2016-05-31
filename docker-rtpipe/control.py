@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import click, os, glob, boto3, gzip
+import sdmpy
 
 s3 = boto3.resource('s3')
 databucket = 'ska-vla-frb-pds'
@@ -29,8 +30,6 @@ def listsdms(bucketname, sort):
 @click.option('--bucketname', default=databucket)
 def listscans(sdmfile, bucketname):
     """ Get dict of (scan, bdfnum) from Main.xml. Creates skeleton sdm file locally, if not available. """
-
-    import sdmpy
 
     assert sdmfile
     if not os.path.exists(sdmfile): copyskeleton(sdmfile, bucketname=bucketname)
@@ -183,12 +182,11 @@ def findbdf(sdmfile, bdfstr, bucketname=databucket):
 
 
 def getscans(sdmfile, bucketname):
-    import sdmpy
 
     if not os.path.exists(sdmfile): copyskeleton(sdmfile, bucketname=bucketname)
 
     sdm = sdmpy.SDM(sdmfile)
-    scans = dict((int(sdm['Main'][row].scanNumber), sdm['Main'][row].dataUID.split('/')[-1])
+    scans = dict((int(sdm['Main'][row].scanNumber), str(sdm['Main'][row].dataUID).split('/')[-1])
              for row in range(len(sdm['Main'])))
 
     return scans
