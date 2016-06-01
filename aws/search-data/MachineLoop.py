@@ -3,7 +3,7 @@ import os.path
 
 print("start process")
 nameList = []
-numOfMachine = 1
+numOfMachine = 2
 machineBaseName = 'machine'
 for i in range(numOfMachine):
     machineName = machineBaseName + str(i)

@@ -186,8 +186,11 @@ def getscans(sdmfile, bucketname):
     if not os.path.exists(sdmfile): copyskeleton(sdmfile, bucketname=bucketname)
 
     sdm = sdmpy.SDM(sdmfile)
-    scans = dict((int(sdm['Main'][row].scanNumber), str(sdm['Main'][row].dataUID).split('/')[-1])
-             for row in range(len(sdm['Main'])))
+    scans = {}
+    for scan in sdm.scans():
+        scannum = int(scan.idx)
+        bdfstr = str(scan._bdf_fname).split('/')[-1]
+        scans[scannum] = bdfstr
 
     return scans
 
