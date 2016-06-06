@@ -7,12 +7,12 @@ function SearchScanLoop() {
 
 	count=`docker ps -a |grep Up | wc -l`
 	if (($count < 1)); then
-	    git pull
+	    git pull aws master
 	    sdmfile=`python next_to_search_sdm.py`
 	    scan=`python next_to_search_scan.py`
 	    python add_finished_to_complete.py $sdmfile $scan
 	    git commit -am 'starting a job'
-	    git push
+	    git push aws master
 	    contid=`docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan`
 	else
 		echo machine is in use
