@@ -5,7 +5,7 @@ import sdmpy
 
 s3 = boto3.resource('s3')
 databucket = 'ska-vla-frb-pds'
-candsbucket = 'ska-vla-frb-cands'
+candsbucket = 'ska-vla-frb-cands2'  # pay bucket
 
 
 @click.group('control')

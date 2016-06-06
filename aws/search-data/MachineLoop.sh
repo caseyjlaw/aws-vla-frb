@@ -20,18 +20,17 @@ function SearchScanLoop() {
 }
 python createMachine.py $numOfMachine $machineBaseName
 
-while [ $numOfMachine > 0 ]; do
-	for i in $(more machineList.csv); do
-		SearchScanLoop $i
-    done
-    if (($numOfUp < 1)); then
-        numOfMachine=$(($numOfMachine+1))
-        python addMachine.py $numOfMachine $machineBaseName
-    else
-    	echo
-    fi
-    numOfUp=0
-    sleep 10
+for i in $(more machineList.csv); do
+	SearchScanLoop $i
 done
+if (($numOfUp < 1)); then
+    numOfMachine=$(($numOfMachine+1))
+    python addMachine.py $numOfMachine $machineBaseName
+else
+	echo
+fi
+numOfUp=0
+sleep 10
+
     
     
