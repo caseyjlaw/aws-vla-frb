@@ -3,7 +3,7 @@
 numOfUp=0
 function SearchScanLoop() {
 	echo into the search
-	eval $(docker-machine env $machineName)
+	eval $(docker-machine env $1)
 
 	count=`docker ps -a |grep Up | wc -l`
 	if (($count < 1)); then
@@ -21,6 +21,7 @@ function SearchScanLoop() {
 python createMachine.py $numOfMachine $machineBaseName
 
 for i in $(more machineList.csv); do
+	echo machine name $i
 	SearchScanLoop $i
 done
 if (($numOfUp < 1)); then
