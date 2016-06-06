@@ -3,8 +3,12 @@ import csv
 import subprocess
 
 numOfMachine = int(sys.argv[1])
-print(numOfMachine)
-machineBaseName = 'machine'
+
+if (len(sys.argv) == 3):
+    machineBaseName = str(sys.argv[2])
+else:
+    machineBaseName = 'test'
+  
 with open("machineList.csv", "w+") as machineList:
     machineWriter = csv.writer(machineList, lineterminator = "\n")
     for i in range(numOfMachine):

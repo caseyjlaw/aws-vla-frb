@@ -1,11 +1,9 @@
 #!/bin/bash
 
-numOfMachine=2
-
+numOfUp=0
 function SearchScanLoop() {
 	echo into the search
 	eval $(docker-machine env $machineName)
-	export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
 
 	count=`docker ps -a |grep Up | wc -l`
 	if (($count < 1)); then
@@ -20,9 +18,20 @@ function SearchScanLoop() {
 		echo machine is in use
 	fi
 }
+python createMachine.py $numOfMachine $machineBaseName
 
-python createMachine.py $numOfMachine
-
-for i in $(more machineList.csv); do
-	SearchScanLoop $i
+while [ $numOfMachine > 0 ]; do
+	for i in $(more machineList.csv); do
+		SearchScanLoop $i
+    done
+    if (($numOfUp < 1)); then
+        numOfMachine=$(($numOfMachine+1))
+        python addMachine.py $numOfMachine $machineBaseName
+    else
+    	echo
+    fi
+    numOfUp=0
+    sleep 10
 done
+    
+    
