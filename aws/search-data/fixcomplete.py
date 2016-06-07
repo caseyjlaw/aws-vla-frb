@@ -1,7 +1,7 @@
-import boto3, csv
+import boto3, csv, sys
 
 s3 = boto3.resource('s3')
-candsbucket = 'ska-vla-frb-cands'
+candsbucket = 'ska-vla-frb-cands2'  # in default (pay) account
 
 def productlist(bucketname=candsbucket):
     """ Get all cands/noise products as (sdmfile, scan) lists """
@@ -31,8 +31,17 @@ def write(products, filename="complete.csv"):
 
     with open(filename, "w") as completeFile:
         completeWriter = csv.writer(completeFile, lineterminator = "\n")
+        completeWriter.writerow(['sdmName'] + ['scan number'])
         for sdmfile, scan in products:
             completeWriter.writerow([sdmfile] + [scan])
 
-products = productlist()
-write(products)
+
+if __name__ == '__main__':
+    products = productlist()
+    if sys.argv[1] == 'print':
+        print('sdm, scan')
+        print('---------')
+        for sdm, scan in products:
+            print(str(sdm), scan)
+    else:
+        write(products)
