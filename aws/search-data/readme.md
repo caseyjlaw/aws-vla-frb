@@ -29,3 +29,15 @@ c1745a56dbc0        caseyjlaw/rtpipe-aws   "/entrypoint.sh searc"   17 minutes a
 ```C
 Juns-MBP:search-data juntan$ docker-machine rm jun0
 ```
+
+# need to do:
+1. test if put the spot price flag what limit we get in us-west-2
+2. try change the region in the MachineLoop.py to us-west-1 see if we can run more search there
+3. look at the spot pice in diff region
+4. estimation of the cost
+5. delete-key-pair
+
+```C
+aws s3 ls s3://aka-vla-frb-cands2/...
+```
+
