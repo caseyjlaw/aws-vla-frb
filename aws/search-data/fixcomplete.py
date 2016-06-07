@@ -38,10 +38,11 @@ def write(products, filename="complete.csv"):
 
 if __name__ == '__main__':
     products = productlist()
-    if sys.argv[1] == 'print':
-        print('sdm, scan')
-        print('---------')
-        for sdm, scan in products:
-            print(str(sdm), scan)
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'print':
+            print('sdm, scan')
+            print('---------')
+            for sdm, scan in products:
+                print(str(sdm), scan)
     else:
         write(products)
