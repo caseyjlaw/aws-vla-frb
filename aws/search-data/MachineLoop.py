@@ -2,16 +2,31 @@ import subprocess
 import os.path
 import sys
 import time
-
+'''
+python MachineLoop.py <machineBaseName> <numOfMachine> [<spotPrice> <spotPriceMode>]
+'''
 print("start process")
-assert (len(sys.argv) == 2), "Missing the machine base name. Format: python MachineLoop.py <machineBaseName>"
+assert (len(sys.argv) >= 3), "Missing the machine base name. Format: python MachineLoop.py <machineBaseName> <numOFMachine>"
 nameList = []
-numOfMachine = 3
 machineBaseName = str(sys.argv[1])
+numOfMachine = int(sys.argv[2])
+spotPriceMode = False
+
+if (len(sys.argv) == 5 and str(sys.argv[4])==True):
+    spotPrice = str(sys.argv[3])
+    spotPriceMode = True
+else:
+    assert (len(sys.argv) == 5 and str(sys.argv[4])==True), "Missing arguments or wrong arguments"
+
 for i in range(numOfMachine):
     machineName = machineBaseName + str(i)
-    subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type c4.xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY", shell=True)
+    if spotPriceMode:
+        subprocess.call("docker-machine create --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type c4.xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-request-spot-instance --amazonec2-spot-price " + spotPrice + " " + machineName, shell=True)
+    else:
+        subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type c4.xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY", shell=True)
+
     nameList.append(machineName)
+    time.sleep(3)
 
 while (True):
     for name in nameList:
@@ -19,4 +34,5 @@ while (True):
         subprocess.call("chmod +x SearchScanLoop.sh", shell=True)
         subprocess.call("machineName="+name+" ./SearchScanLoop.sh", shell=True)
     time.sleep(30)
+
     
