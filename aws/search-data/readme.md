@@ -1,21 +1,43 @@
-## search all scans of an sdmfile
+###### Do the following inside the aws-vla-frb/aws/search-data folder
+```C
+git pull
 
-docker_rock.py search listsdms.txt
+export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 
-sdmfile=$(python next_to_search_sdm.py)
+python MachineLoop.py jun #jun is a machineBaseName can be changed
+```
 
-scan=$(python next_to_search_scan.py)
+###### MachineLoop.py runs an infinite loop, you can ctrl-c to stop it any time. All searches are running in the background. Stopping the python script does not stop the searching procedure. Following is the example of checking current running process:
 
-docker run --rm $config caseyjlaw/rtpipe-aws copyscan $sdmfile $scan # copy data for scan to instance
+```C
+Juns-MBP:search-data juntan$ docker-machine ls
+NAME   ACTIVE   DRIVER      STATE     URL                         SWARM   DOCKER    ERRORS
+jun0   -        amazonec2   Running   tcp://54.187.250.188:2376           v1.11.2   
+jun1   -        amazonec2   Running   tcp://54.186.160.96:2376            v1.11.2   
+jun2   -        amazonec2   Running   tcp://54.201.144.248:2376           v1.11.2   
+Juns-MBP:search-data juntan$ eval $(docker-machine env jun0)
+Juns-MBP:search-data juntan$ docker ps -a
+CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                    NAMES
+1af9885acafe        caseyjlaw/rtpipe-aws   "/entrypoint.sh searc"   16 minutes ago      Up 16 minutes   0.0.0.0:8888->8888/tcp   compassionate_liskov
+Juns-MBP:search-data juntan$ eval $(docker-machine env jun1)
+Juns-MBP:search-data juntan$ docker ps -a
+CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                    NAMES
+c1745a56dbc0        caseyjlaw/rtpipe-aws   "/entrypoint.sh searc"   17 minutes ago      Up 17 minutes       0.0.0.0:8888->8888/tcp   admiring_bardeen
+```
+###### If the STATUS is Exited, you can do the following
 
-contid=`docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan` # search scan for transients in background
+```C
+Juns-MBP:search-data juntan$ docker-machine rm jun0
+```
 
-# products are backed up automatally to s3 after search completes
+# need to do:
+1. test if put the spot price flag what limit we get in us-west-2
+2. try change the region in the MachineLoop.py to us-west-1 see if we can run more search there
+3. look at the spot pice in diff region
+4. estimation of the cost
+5. delete-key-pair
 
-add_finish_to_complete.py $sdmfile $scan
+```C
+aws s3 ls s3://aka-vla-frb-cands2/...
+```
 
-************************************************************************
-'''
-add_finish_to_complete.py $sdmfile $scan
-'''
-does not work yet because python script behaves differently when pass environment varibales as arguments
