@@ -8,15 +8,16 @@ error = `docker-machine ls | grep ERROR | wc -l`
 if (($error > 0)); then
 	docker-machine rm $machineName
 	python removeMachine.py $machineName
+
 else
 	count=`docker ps -a |grep Up | wc -l`
 	if (($count < 1)); then
-	    git pull aws master
+	    git pull 
 	    sdmfile=`python next_to_search_sdm.py`
 	    scan=`python next_to_search_scan.py`
 	    python add_finished_to_complete.py $sdmfile $scan
 	    git commit -am 'starting a job'
-	    git push aws master
+	    git push 
 	    contid=`docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan`
 	else
 		echo machine is in use
