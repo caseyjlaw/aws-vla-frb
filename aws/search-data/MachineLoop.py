@@ -55,8 +55,8 @@ if __name__ == '__main__':
         for name in nameList:
             name = name[:-1]
             print("name: ", name)
-            #subprocess.call("chmod +x SearchScanLoop.sh", shell=True)
-            #subprocess.call("machineName="+name+" ./SearchScanLoop.sh", shell=True)
+            subprocess.call("chmod +x SearchScanLoop.sh", shell=True)
+            subprocess.call("machineName="+name+" ./SearchScanLoop.sh", shell=True)
         time.sleep(30)
 
     
