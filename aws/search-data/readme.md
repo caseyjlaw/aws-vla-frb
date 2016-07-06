@@ -1,12 +1,14 @@
+#Steps To Run The Script
 ###### Do the following inside the aws-vla-frb/aws/search-data folder
 ```C
 git pull
 
 export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id) AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
 
-python MachineLoop.py jun #jun is a machineBaseName can be changed
+python MachineLoop.py <machineBaseName> <numOfMachine> [<spotPrice>]
 ```
 
+#After Exiting The Script
 ###### MachineLoop.py runs an infinite loop, you can ctrl-c to stop it any time. All searches are running in the background. Stopping the python script does not stop the searching procedure. Following is the example of checking current running process:
 
 ```C
@@ -29,15 +31,12 @@ c1745a56dbc0        caseyjlaw/rtpipe-aws   "/entrypoint.sh searc"   17 minutes a
 ```C
 Juns-MBP:search-data juntan$ docker-machine rm jun0
 ```
-
-# need to do:
-1. test if put the spot price flag what limit we get in us-west-2
-2. try change the region in the MachineLoop.py to us-west-1 see if we can run more search there
-3. look at the spot pice in diff region
-4. estimation of the cost
-5. delete-key-pair
-
+###### check the bucket
 ```C
 aws s3 ls s3://aka-vla-frb-cands2/...
 ```
+
+# Flow Of The Script
+###### MachineLoop.py calls SearchScanLoop.sh
+###### SearchScanLoop.sh calls removeMachine.py, python next_to_search_sdm.py, python next_to_search_scan.py and add_finished_to_complete.py
 
