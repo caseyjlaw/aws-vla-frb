@@ -80,11 +80,9 @@ def copyscan(sdmfile, scan, bucketname=databucket):
 @cli.command()
 @click.argument('sdmfile')
 @click.argument('scan', type=int)
-def search(sdmfile, scan, **kwargs):
-    """ Search scan of sdmfile for transients. Uses rtpipe_cbe.conf file in repo. 
-
-    kwargs is passed directly to rt.set_pipeline to customize search.
-    """
+@click.option('--memory_limit', type=float, default=0)
+def search(sdmfile, scan, memory_limit):
+    """ Search scan of sdmfile for transients. Uses rtpipe_cbe.conf file in repo. """
 
     import rtpipe.RT as rt
     import rtpipe.parsecands as pc
@@ -97,8 +95,13 @@ def search(sdmfile, scan, **kwargs):
     if not os.path.exists(sdmpath.rstrip('.gz')):
         copyscan(sdmfile, scan, databucket)
 
-    d = rt.set_pipeline(sdmfile, scan, paramfile='rtpipe_cbe.conf',
-                        fileroot=sdmfile, nologfile=True, **kwargs)
+    if memory_limit:
+        d = rt.set_pipeline(sdmfile, scan, paramfile='rtpipe_cbe.conf',
+                            fileroot=sdmfile, nologfile=True, memory_limit=memory_limit)
+    else:
+        d = rt.set_pipeline(sdmfile, scan, paramfile='rtpipe_cbe.conf',
+                            fileroot=sdmfile, nologfile=True)
+
     rt.pipeline(d, range(d['nsegments']))
     pc.merge_segments(sdmfile, scan)
 
