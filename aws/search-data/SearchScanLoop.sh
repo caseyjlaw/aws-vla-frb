@@ -2,7 +2,7 @@
 
 echo into the search
 eval $(docker-machine env $machineName)
-export config="-m 7G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+export config="-m 14G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
 
 error = `docker-machine ls | grep ERROR | wc -l`
 if (($error > 0)); then
@@ -18,7 +18,7 @@ else
 	    python add_finished_to_complete.py $sdmfile $scan
 	    git commit -am 'starting a job'
 	    git push 
-	    contid=`docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan`
+	    contid=`docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan --paramfile rtpipe_c42xlarge.conf`
 	else
 		echo machine is in use
 	fi

@@ -8,7 +8,7 @@ EXPOSE 8888
 COPY setup.sh /
 RUN ["/bin/bash", "/setup.sh"]
 
-COPY base.ipynb control.py entrypoint.sh rtpipe_cbe.conf /
+COPY base.ipynb control.py entrypoint.sh rtpipe_c4xlarge.conf rtpipe_c42xlarge.conf /
 RUN chmod +x /entrypoint.sh
 RUN chmod +x /control.py
 

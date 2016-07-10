@@ -8,7 +8,7 @@ set -e
 command="$1"
 shift 
 
-mv /rtpipe_cbe.conf /work  # move stuff into newly mounted disk
+mv /rtpipe*conf /work  # move stuff into newly mounted disk
 exec /control.py "$command" "$@"
 
 
