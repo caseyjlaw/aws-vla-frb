@@ -4,7 +4,7 @@ echo into the search
 eval $(docker-machine env $machineName)
 export config="-m 14G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
 
-error = `docker-machine ls | grep ERROR | wc -l`
+error=`docker-machine ls | grep $machineName | grep ERROR | wc -l`
 if (($error > 0)); then
 	docker-machine rm $machineName
 	python removeMachine.py $machineName
