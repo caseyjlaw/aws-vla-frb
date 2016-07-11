@@ -28,16 +28,13 @@ if __name__ == '__main__':
         spotPriceMode = True
 
     '''Machine creation'''
-    f = open("machineNames.txt", "w")
-    for i in range(numOfMachine):
-        machineName = machineBaseName + str(i)
-        if spotPriceMode:
-            subprocess.call("docker-machine create --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-request-spot-instance --amazonec2-spot-price " + spotPrice + " " + machineName, shell=True)
-        else:
-            subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY", shell=True)
-        f.write(machineName + "\n")
-        time.sleep(3)
-    f.close()
+#    f = open("machineNames.txt", "w")
+#    for i in range(numOfMachine):
+#        machineName = machineBaseName + str(i)
+#        createMachine(machineName, spotPriceMode, spotPrice)
+#        f.write(machineName + "\n")
+#        time.sleep(3)
+#    f.close()
 
     '''Begin doing the scan-search'''
     while (True):
