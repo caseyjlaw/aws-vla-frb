@@ -37,23 +37,21 @@ if __name__ == '__main__':
 #    f.close()
 
     '''Begin doing the scan-search'''
+    subprocess.call("chmod +x SearchScanLoop.sh", shell=True)
+    i = 0
     while (True):
-        f = open("machineNames.txt", "r")
-        nameList = f.readlines()
-        f.close()
+        with open("machineNames.txt", "r") as f:
+            nameList = f.readlines()
 
         if len(nameList) < numOfMachine:
-            f = open("machineNames.txt", "a")
             i += 1
-            createMachine(machineBaseName + str(i), spotPriceMode, spotPrice)
-            f.write(machineBaseName + str(i))
-            f.close()
-
-        for name in nameList:
-            name = name[:-1]
-            print("name: ", name)
-            subprocess.call("chmod +x SearchScanLoop.sh", shell=True)
+            name = machineBaseName + str(i)
+            createMachine(name, spotPriceMode, spotPrice)
             subprocess.call("machineName="+name+" ./SearchScanLoop.sh", shell=True)
+
+            with open("machineNames.txt", "a") as f:
+                f.write(name)
+
         time.sleep(30)
 
     
