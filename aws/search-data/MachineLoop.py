@@ -50,7 +50,7 @@ if __name__ == '__main__':
             subprocess.call("machineName="+name+" ./SearchScanLoop.sh", shell=True)
 
             with open("machineNames.txt", "a") as f:
-                f.write(name)
+                f.write(name + "\n")
 
         time.sleep(30)
 
