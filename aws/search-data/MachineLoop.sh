@@ -13,7 +13,7 @@ function SearchScanLoop() {
 	    python add_finished_to_complete.py $sdmfile $scan
 	    git commit -am 'starting a job'
 	    git push
-	    contid=`docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan`
+	    contid=`docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan --paramfile rtpipe_c42xlarge.conf`
 	else
 		echo machine is in use
 	fi
