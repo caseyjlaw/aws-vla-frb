@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo into the search
 eval $(docker-machine env $machineName)
 export config="-m 14G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
 
@@ -15,6 +14,8 @@ else
 	    git pull 
 	    sdmfile=`python next_to_search_sdm.py`
 	    scan=`python next_to_search_scan.py`
+	    echo scan $sdmfile
+	    echo scan $scan
 	    python add_finished_to_complete.py $sdmfile $scan
 	    git commit -am 'starting a job'
 	    git push 

@@ -4,14 +4,14 @@ import sys
 import time
 
 '''
-python MachineLoop.py <machineBaseName> <numOfMachine> [<spotPrice>]
+python MachineLoop.py <machineBaseName> <numOfMachine> [<spotPrice>] [<region>]
 '''
 
-def createMachine(machineName, spotPriceMode, spotPrice = 0):
+def createMachine(machineName, spotPriceMode, region, spotPrice):
     if spotPriceMode:
-        subprocess.call("docker-machine create --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-request-spot-instance --amazonec2-spot-price " + spotPrice + " " + machineName, shell=True)
+        subprocess.call("docker-machine create --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-request-spot-instance --amazonec2-spot-price " + spotPrice + " " + machineName, shell=True)
     else:
-        subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY", shell=True)
+        subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY", shell=True)
 
 '''Main function'''
 if __name__ == '__main__':
@@ -22,19 +22,24 @@ if __name__ == '__main__':
     numOfMachine = int(sys.argv[2])
     spotPriceMode = False
     spotPrice = 0
+    region = "us-west-2"
 
-    if (len(sys.argv) == 4):
+    if (len(sys.argv) >= 4):
         spotPrice = str(sys.argv[3])
         spotPriceMode = True
+    if (len(sys.argv) == 5):
+        spotPrice = str(sys.argv[4])
 
     '''Machine creation'''
-#    f = open("machineNames.txt", "w")
-#    for i in range(numOfMachine):
-#        machineName = machineBaseName + str(i)
-#        createMachine(machineName, spotPriceMode, spotPrice)
-#        f.write(machineName + "\n")
-#        time.sleep(3)
-#    f.close()
+    '''
+    f = open("machineNames.txt", "w")
+    for i in range(numOfMachine):
+        machineName = machineBaseName + str(i)
+        createMachine(machineName, spotPriceMode, region, spotPrice)
+        f.write(machineName + "\n")
+        time.sleep(3)
+    f.close()
+    '''
 
     '''Begin doing the scan-search'''
     subprocess.call("chmod +x SearchScanLoop.sh", shell=True)
@@ -52,6 +57,6 @@ if __name__ == '__main__':
             with open("machineNames.txt", "a") as f:
                 f.write(name + "\n")
 
-        time.sleep(30)
+        time.sleep(120)
 
     
