@@ -4,7 +4,7 @@ import sys
 import time
 
 '''
-python MachineLoop.py <machineBaseName> <numOfMachine> [<spotPrice>] [<region>]
+python MachineLoop.py <machineBaseName> <numOfMachine> [<spotPrice>] [<region>] [<export memory>]
 '''
 
 def createMachine(machineName, spotPriceMode, region, spotPrice):
@@ -23,12 +23,15 @@ if __name__ == '__main__':
     spotPriceMode = False
     spotPrice = 0
     region = "us-west-2"
+    memory = "14G"
 
     if (len(sys.argv) >= 4):
         spotPrice = str(sys.argv[3])
         spotPriceMode = True
-    if (len(sys.argv) == 5):
+    if (len(sys.argv) >= 5):
         spotPrice = str(sys.argv[4])
+    if (len(sys.argv) >= 6):
+        memory = str(sys.argv[5])
 
     '''Machine creation'''
     '''
@@ -52,7 +55,7 @@ if __name__ == '__main__':
             i += 1
             name = machineBaseName + str(i)
             createMachine(name, spotPriceMode, spotPrice)
-            subprocess.call("machineName="+name+" ./SearchScanLoop.sh", shell=True)
+            subprocess.call("machineName="+name+" memory="+memory+" ./SearchScanLoop.sh", shell=True)
 
             with open("machineNames.txt", "a") as f:
                 f.write(name + "\n")

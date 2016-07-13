@@ -1,7 +1,7 @@
 #!/bin/bash
 
 eval $(docker-machine env $machineName)
-export config="-m 14G -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+export config="-m "$memory" -p 8888:8888 -v /home/ubuntu:/work -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
 
 error=`docker-machine ls | grep $machineName | grep Error | wc -l`
 if (($error > 0)); then
