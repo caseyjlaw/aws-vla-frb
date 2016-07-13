@@ -9,5 +9,5 @@ if __name__ == '__main__':
     f = open("machineNames.txt","w")
     for line in lines:
     	if line != machineName+"\n":
-    		f.write(line)
+            f.write(line)
     f.close()

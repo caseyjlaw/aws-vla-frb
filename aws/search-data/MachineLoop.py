@@ -28,7 +28,10 @@ if __name__ == '__main__':
         spotPriceMode = True
 
     '''Machine creation'''
-#    f = open("machineNames.txt", "w")
+    if not os.path.exists("machineNames.txt"):
+        with open("machineNames.txt", "w") as f:
+            f.write('')
+
 #    for i in range(numOfMachine):
 #        machineName = machineBaseName + str(i)
 #        createMachine(machineName, spotPriceMode, spotPrice)
@@ -51,7 +54,10 @@ if __name__ == '__main__':
 
             with open("machineNames.txt", "a") as f:
                 f.write(name + "\n")
+        else:
+            for machineName in nameList:
+                subprocess.call("machineName="+name+" ./checkMachine.sh", shell=True)
 
-        time.sleep(30)
+        time.sleep(10)
 
     
