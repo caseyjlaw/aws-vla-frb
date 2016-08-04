@@ -7,11 +7,11 @@ import time
 python MachineLoop.py <machineBaseName> <numOfMachine> [<spotPrice>] [<region>] [<export memory>]
 '''
 
-def createMachine(machineName, spotPriceMode, region, spotPrice):
+def createMachine(machineName, spotPriceMode, region, spotPrice, zone='b'):
     if spotPriceMode:
-        subprocess.call("docker-machine create --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-request-spot-instance --amazonec2-spot-price " + spotPrice + " " + machineName, shell=True)
+        subprocess.call("docker-machine create --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-zone " + zone + " --amazonec2-request-spot-instance --amazonec2-spot-price " + spotPrice + " " + machineName, shell=True)
     else:
-        subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY", shell=True)
+        subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 256 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-zone " + zone, shell=True)
 
 '''Main function'''
 if __name__ == '__main__':
@@ -24,19 +24,21 @@ if __name__ == '__main__':
     spotPrice = 0
     region = "us-west-2"
     memory = "14G"
+    zone = 'a'
 
     if (len(sys.argv) >= 4):
         spotPrice = str(sys.argv[3])
         spotPriceMode = True
     if (len(sys.argv) >= 5):
-        spotPrice = str(sys.argv[4])
+        region = str(sys.argv[4])
     if (len(sys.argv) >= 6):
         memory = str(sys.argv[5])
+    if (len(sys.argv) >= 7):
+        zone = str(sys.argv[6])
 
     '''Machine creation'''
-    if not os.path.exists("machineNames.txt"):
-        with open("machineNames.txt", "w") as f:
-            f.write('')
+    with open("machineNames_{0}.txt".format(region), "w") as f:
+        f.write('')
 
 #    for i in range(numOfMachine):
 #        machineName = machineBaseName + str(i)
@@ -47,23 +49,27 @@ if __name__ == '__main__':
 
     '''Begin doing the scan-search'''
     subprocess.call("chmod +x SearchScanLoop.sh", shell=True)
+    subprocess.call("chmod +x checkMachine.sh", shell=True)
     i = 0
     while (True):
-        with open("machineNames.txt", "r") as f:
+        with open("machineNames_{0}.txt".format(region), "r") as f:
             nameList = f.readlines()
+            nameList = [name.rstrip('\n') for name in nameList]
 
         if len(nameList) < numOfMachine:
             i += 1
-            name = machineBaseName + str(i)
-            createMachine(name, spotPriceMode, region, spotPrice)
-            subprocess.call("machineName="+name+" memory="+memory+" ./SearchScanLoop.sh", shell=True)
+            machineName = '{0}-{1}-{2}'.format(machineBaseName, region, i)
+            createMachine(machineName, spotPriceMode, region, spotPrice, zone=zone)
+            time.sleep(60)
+            subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
+#            subprocess.call("machineName="+machineName+" memory="+memory+" ./SearchScanLoop.sh", shell=True)
 
-            with open("machineNames.txt", "a") as f:
-                f.write(name + "\n")
+            with open("machineNames_{0}.txt".format(region), "a") as f:
+                f.write(machineName + "\n")
         else:
             for machineName in nameList:
-                subprocess.call("machineName="+name+" ./checkMachine.sh", shell=True)
+                subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
 
-        time.sleep(120)
+        time.sleep(60)
 
     
