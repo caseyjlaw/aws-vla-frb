@@ -57,16 +57,18 @@ if __name__ == '__main__':
             nameList = [name.rstrip('\n') for name in nameList]
 
         if len(nameList) < numOfMachine:
+            print('{0} machines found. less than {1} so creating new machine.'.format(len(nameList), numOfMachine))
             i += 1
             machineName = '{0}-{1}-{2}'.format(machineBaseName, region, i)
             createMachine(machineName, spotPriceMode, region, spotPrice, zone=zone)
-            time.sleep(60)
+            time.sleep(300)
             subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
 #            subprocess.call("machineName="+machineName+" memory="+memory+" ./SearchScanLoop.sh", shell=True)
 
             with open("machineNames_{0}.txt".format(region), "a") as f:
                 f.write(machineName + "\n")
         else:
+            print('At numOfMachine limit of {0}. checking on their status.'.format(numOfMachine))
             for machineName in nameList:
                 subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
 
