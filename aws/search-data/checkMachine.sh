@@ -1,7 +1,7 @@
 #!/bin/bash
 
 machineext=`docker-machine ls | awk '{ print $1 }' | grep $machineName$ | wc -l`
-error=`docker-machine ls | awk '{ print $1 }' | grep $machineName$ | grep Error | wc -l`
+error=`docker-machine ls | awk '{ print $1$4 }' | grep ${machineName}Error | wc -l`
 echo Status of $machineName: $machineext $error
 if (($machineext == 1)); then
     if (($error > 0)); then
