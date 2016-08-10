@@ -62,7 +62,7 @@ if __name__ == '__main__':
             machineName = '{0}-{1}-{2}'.format(machineBaseName, region, i)
             createMachine(machineName, spotPriceMode, region, spotPrice, zone=zone)
             time.sleep(300)
-            subprocess.call('docker-machine ls > docker-machine.txt', shell=True)
+            subprocess.call('docker-machine ls > docker-machine_{0}.txt'.format(region), shell=True)
             subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
 #            subprocess.call("machineName="+machineName+" memory="+memory+" ./SearchScanLoop.sh", shell=True)
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
                 f.write(machineName + "\n")
         else:
             print('At numOfMachine limit of {0}. checking on their status.'.format(numOfMachine))
-            subprocess.call('docker-machine ls > docker-machine.txt', shell=True)
+            subprocess.call('docker-machine ls > docker-machine_{0}.txt'.format(region), shell=True)
             for machineName in nameList:
                 subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
 
