@@ -11,6 +11,9 @@ if (($count < 1)); then
     python add_finished_to_complete.py $sdmfile $scan
 #    git commit -am 'starting a job'   # only needed for distributed submission
 #    git push 
-    contid=`docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan --paramfile rtpipe_c42xlarge.conf`
+    echo Running search on $sdmfile $scan
+    docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan --paramfile rtpipe_c42xlarge.conf
+else
+    echo Process Up, skipping this machine.
 fi
 
