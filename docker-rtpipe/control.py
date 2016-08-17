@@ -102,7 +102,9 @@ def search(sdmfile, scan, paramfile):
     rt.pipeline(d, range(d['nsegments']))
     pc.merge_segments(sdmfile, scan)
 
-    backupproducts(sdmfile, scan, bucketname=candsbucket)
+    # back up products and remove locally
+    backupproducts(sdmfile, scan, bucketname=candsbucket)  # removes local version
+    os.remove(sdmpath.rstrip('.gz'))
 
 
 @cli.command()
@@ -167,8 +169,9 @@ def backupproducts(sdmfile, scan, bucketname=candsbucket):
     products = [os.path.abspath(prod) for prod in glob.glob('cands_{}_sc{}*'.format(sdmfile, scan)) + glob.glob('noise_{}_sc*'.format(sdmfile, scan))]
     
     for product in products:
-        print('Copying {}'.format(product))
+        print('Moving {}'.format(product))
         bucket.upload_file(product, os.path.join(sdmfile, os.path.basename(product)))
+        os.remove(product)
 
 
 def findbdf(sdmfile, bdfstr, bucketname=databucket):
