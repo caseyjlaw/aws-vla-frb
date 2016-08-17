@@ -37,8 +37,9 @@ if __name__ == '__main__':
         zone = str(sys.argv[6])
 
     '''Machine creation'''
-    with open("machineNames_{0}.txt".format(region), "w") as f:
-        f.write('')
+    if not os.path.exists("machineNames_{0}.txt".format(region)):
+        with open("machineNames_{0}.txt".format(region), "w") as f:
+            f.write('')
 
 #    for i in range(numOfMachine):
 #        machineName = machineBaseName + str(i)
@@ -50,7 +51,6 @@ if __name__ == '__main__':
     '''Begin doing the scan-search'''
     subprocess.call("chmod +x SearchScanLoop.sh", shell=True)
     subprocess.call("chmod +x checkMachine.sh", shell=True)
-    i = 0
     while (True):
         with open("machineNames_{0}.txt".format(region), "r") as f:
             nameList = f.readlines()
@@ -58,10 +58,10 @@ if __name__ == '__main__':
 
         if len(nameList) < numOfMachine:
             print('{0} machines found. less than {1} so creating new machine.'.format(len(nameList), numOfMachine))
-            i += 1
+            i = max([int(name.split('-')[-1]) for name in nameList])+1
             machineName = '{0}-{1}-{2}'.format(machineBaseName, region, i)
             createMachine(machineName, spotPriceMode, region, spotPrice, zone=zone)
-            time.sleep(300)
+            time.sleep(30)
             subprocess.call('docker-machine ls > docker-machine_{0}.txt'.format(region), shell=True)
             subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
 #            subprocess.call("machineName="+machineName+" memory="+memory+" ./SearchScanLoop.sh", shell=True)

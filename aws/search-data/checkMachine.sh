@@ -1,7 +1,7 @@
 #!/bin/bash
 
 machineext=`cat docker-machine_$region.txt | awk '{ print $1 }' | grep $machineName$ | wc -l`
-error=`cat docker-machine_$region.txt | awk '{ print $1$4 }' | grep ${machineName}Unknown | wc -l`
+error=`cat docker-machine_$region.txt | awk '{ print $1$4 }' | egrep "${machineName}Unknown|${machineName}Error" | wc -l`
 echo Status of $machineName in $region: $machineext $error
 if (($machineext == 1)); then
     if (($error > 0)); then
