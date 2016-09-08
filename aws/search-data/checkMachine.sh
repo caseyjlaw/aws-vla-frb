@@ -8,6 +8,7 @@ if (($machineext == 1)); then
 	echo removing $machineName
 	docker-machine rm -f $machineName
 	python removeMachine.py $machineName $region
+	aws ec2 delete-key-pair --key-name $machineName
     else
 	echo beginning SearchScanLoop for $machineName
 	machineName=$machineName memory=$memory ./SearchScanLoop.sh

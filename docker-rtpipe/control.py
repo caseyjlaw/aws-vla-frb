@@ -37,7 +37,7 @@ def listscans(sdmfile, bucketname):
     sdm = sdmpy.SDM(sdmfile)
     print('List of scans:')
     for row in range(len(sdm['Main'])):
-        scanIntent = sdm['Scan'][row].scanIntent
+        scanIntent = str(sdm['Scan'][row].scanIntent)
         if 'TARGET' in scanIntent:
             intent = 'TARGET'
         elif 'CALIBRATE' in scanIntent:

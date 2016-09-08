@@ -58,7 +58,10 @@ if __name__ == '__main__':
 
         if len(nameList) < numOfMachine:
             print('{0} machines found. less than {1} so creating new machine.'.format(len(nameList), numOfMachine))
-            i = max([int(name.split('-')[-1]) for name in nameList])+1
+            try:
+                i = max([int(name.split('-')[-1]) for name in nameList])+1
+            except ValueError:
+                i=0
             machineName = '{0}-{1}-{2}'.format(machineBaseName, region, i)
             createMachine(machineName, spotPriceMode, region, spotPrice, zone=zone)
             time.sleep(30)

@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import csv
+import os.path
 
 '''
 This script runs the listsdms and outputs all the sdm names to listsdms.txt.
@@ -30,21 +31,17 @@ def docker_rock(listsdms_txt = "listsdms.txt"):
      with open("target.csv", "w") as targetFile:
           targetWriter = csv.writer(targetFile, lineterminator = "\n")
           targetWriter.writerow(["sdmName"] + ["scan number"] + ['type'] + ["size"])
+
      for sdmName in sdmName_list:
           if ("gains" not in sdmName):
                temp_txt = sdmName + ".txt"
-               print('Writing scan list to {0}...'.format(temp_txt))
-               subprocess.call("docker run --rm -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY caseyjlaw/rtpipe-aws listscans " + sdmName + " > " + temp_txt, shell=True)
+               if not os.path.exists(temp_txt):
+                    print('Writing scan list to {0}...'.format(temp_txt))
+                    subprocess.call("docker run --rm -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY caseyjlaw/rtpipe-aws listscans " + sdmName + " > " + temp_txt, shell=True)
+               else:
+                    print('Reading scan list from {0}...'.format(temp_txt))
+
                filter_target(temp_txt, sdmName)
-
-     '''fill in the code: do the search in here. use next_to_search() to get the next sdmfile and
-        scan to run copyscan. Add the sdmfile and scan to the complete.csv after finish running
-        copyscan on them.'''
-
-     print('Adding header line to complete.csv')
-     with open("complete.csv", "a") as completeFile:
-          completeWriter = csv.writer(completeFile, lineterminator = "\n")
-          completeWriter.writerow(["sdmName"] + ["scan number"])
 
      return True
 
