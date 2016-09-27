@@ -14,6 +14,13 @@ if (($count < 1)); then
     echo Running search on $sdmfile $scan
     docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan --paramfile rtpipe_c42xlarge.conf
 else
-    echo Process Up, skipping this machine.
+    if ((cleanup == true)); then
+	echo Process Up, skipping this machine.
+    else
+	echo removing $machineName
+	docker-machine rm -f $machineName
+	python removeMachine.py $machineName $region
+	aws ec2 delete-key-pair --key-name $machineName
+    fi
 fi
 

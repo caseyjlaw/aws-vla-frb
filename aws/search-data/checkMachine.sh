@@ -11,7 +11,7 @@ if (($machineext == 1)); then
 	aws ec2 delete-key-pair --key-name $machineName
     else
 	echo beginning SearchScanLoop for $machineName
-	machineName=$machineName memory=$memory ./SearchScanLoop.sh
+	region=$region cleanup=$cleanup machineName=$machineName memory=$memory ./SearchScanLoop.sh
     fi
 else
     echo no machine found for $machineName. Removing locally.

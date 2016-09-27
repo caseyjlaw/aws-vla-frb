@@ -25,6 +25,7 @@ if __name__ == '__main__':
     region = "us-west-2"
     memory = "14G"
     zone = 'a'
+    cleanup = 'True'
 
     if (len(sys.argv) >= 4):
         spotPrice = str(sys.argv[3])
@@ -66,7 +67,7 @@ if __name__ == '__main__':
             createMachine(machineName, spotPriceMode, region, spotPrice, zone=zone)
             time.sleep(30)
             subprocess.call('docker-machine ls > docker-machine_{0}.txt'.format(region), shell=True)
-            subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
+            subprocess.call("cleanup="+cleanup+" machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
 #            subprocess.call("machineName="+machineName+" memory="+memory+" ./SearchScanLoop.sh", shell=True)
 
             with open("machineNames_{0}.txt".format(region), "a") as f:
@@ -75,7 +76,7 @@ if __name__ == '__main__':
             print('At numOfMachine limit of {0}. checking on their status.'.format(numOfMachine))
             subprocess.call('docker-machine ls > docker-machine_{0}.txt'.format(region), shell=True)
             for machineName in nameList:
-                subprocess.call("machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
+                subprocess.call("cleanup="+cleanup+" machineName="+machineName+" memory="+memory+ " region=" + region + " ./checkMachine.sh", shell=True)
 
         time.sleep(60)
 
