@@ -8,7 +8,7 @@ if (($machineext == 1)); then
 	echo removing $machineName
 	docker-machine rm -f $machineName
 	python removeMachine.py $machineName $region
-	aws ec2 delete-key-pair --key-name $machineName
+	aws ec2 delete-key-pair --key-name $machineName --region $region
     else
 	echo beginning SearchScanLoop for $machineName
 	region=$region cleanup=$cleanup machineName=$machineName memory=$memory ./SearchScanLoop.sh
@@ -16,5 +16,5 @@ if (($machineext == 1)); then
 else
     echo no machine found for $machineName. Removing locally.
     python removeMachine.py $machineName $region
-    aws ec2 delete-key-pair --key-name $machineName
+    aws ec2 delete-key-pair --key-name $machineName --region $region
 fi
