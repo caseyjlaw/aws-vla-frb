@@ -9,9 +9,9 @@ python MachineLoop.py <machineBaseName> <numOfMachine> [<spotPrice>] [<region>] 
 
 def createMachine(machineName, spotPriceMode, region, spotPrice, zone='b'):
     if spotPriceMode:
-        subprocess.call("docker-machine create --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 64 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-zone " + zone + " --amazonec2-request-spot-instance --amazonec2-spot-price " + spotPrice + " " + machineName, shell=True)
+        subprocess.call("docker-machine create --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 128 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-zone " + zone + " --amazonec2-request-spot-instance --amazonec2-spot-price " + spotPrice + " " + machineName, shell=True)
     else:
-        subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 64 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-zone " + zone, shell=True)
+        subprocess.call("docker-machine create " + machineName + " --driver amazonec2 --amazonec2-region " + region + " --amazonec2-instance-type c4.2xlarge --amazonec2-root-size 128 --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY --amazonec2-zone " + zone, shell=True)
 
 '''Main function'''
 if __name__ == '__main__':
