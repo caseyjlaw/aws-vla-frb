@@ -8,11 +8,15 @@ if (($count < 1)); then
 #    git pull   # only needed for distributed submission
     sdmfile=`python next_to_search_sdm.py`
     scan=`python next_to_search_scan.py`
-    python add_finished_to_complete.py $sdmfile $scan
+    if ((${#sdmfile} > 0)); then
+	python add_finished_to_complete.py $sdmfile $scan
 #    git commit -am 'starting a job'   # only needed for distributed submission
 #    git push 
-    echo Running search on $sdmfile $scan
-    docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan --paramfile rtpipe_c42xlarge.conf
+	echo Running search on $sdmfile $scan
+	docker run -d $config caseyjlaw/rtpipe-aws search $sdmfile $scan --paramfile rtpipe_c42xlarge.conf
+    else
+	echo 'No sdm to search'
+    fi
 else
     if ((cleanup == true)); then
 	echo Process Up, skipping this machine.
