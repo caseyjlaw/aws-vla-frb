@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import click, os, glob, boto3, gzip
+import click, os, glob, boto3, gzip, shutil
 import sdmpy
 
 s3 = boto3.resource('s3')
@@ -68,11 +68,9 @@ def copyscan(sdmfile, scan, bucketname=databucket):
         # check if data is zipped (done for NERSC data)
         if '.gz' in sdmpath:
             print('Unzipping {}'.format(sdmpath))
-            with gzip.open(sdmpath, 'rb') as zf:
-                data = zf.read()
-
-            with open(sdmpath[:-3], 'wb') as nf:
-                nf.write(data)
+            with gzip.open(sdmpath, 'rb') as fin:
+                with open(sdmpath.rstrip('.gz'), 'wb') as fout:
+                    shutil.copyfileobj(fin, fout)
     else:
         print('File {} already exists'.format(sdmpath.rstrip('.gz')))
 
