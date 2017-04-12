@@ -34,7 +34,7 @@ def listscans(sdmfile, bucketname):
     assert sdmfile
     if not os.path.exists(sdmfile): copyskeleton(sdmfile, bucketname=bucketname)
 
-    sdm = sdmpy.SDM(sdmfile)
+    sdm = sdmpy.SDM(sdmfile, use_xsd=False)
     print('List of scans:')
     for row in range(len(sdm['Main'])):
         scanIntent = str(sdm['Scan'][row].scanIntent)
@@ -186,7 +186,7 @@ def getscans(sdmfile, bucketname):
 
     if not os.path.exists(sdmfile): copyskeleton(sdmfile, bucketname=bucketname)
 
-    sdm = sdmpy.SDM(sdmfile)
+    sdm = sdmpy.SDM(sdmfile, use_xsd=False)
     scans = {}
     for scan in sdm.scans():
         scannum = int(scan.idx)
