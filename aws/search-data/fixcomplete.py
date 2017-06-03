@@ -16,7 +16,7 @@ def productlist(bucketname=candsbucket):
 
         # filter to list of cands and noise products
         candscans = [int(pr.rstrip('.pkl')[pr.find('_sc') + 3:]) for pr in prods if (('cands' in pr) and ('pkl' in pr))]
-        noisescans = [int(pr.rstrip('.pkl')[pr.find('_sc') + 3:]) for pr in prods if (('noise' in pr) and ('pkl' in pr))]
+        noisescans = [int(pr.rstrip('.pkl')[pr.find('_sc') + 3:]) for pr in prods if (('noise' in pr) and ('pkl' in pr) and ('seg' not in pr))]
 
         # for each scan in both lists, add to products list
         for scan in list(set(candscans + noisescans)):
