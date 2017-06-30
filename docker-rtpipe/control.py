@@ -71,9 +71,11 @@ def copyscan(sdmfile, scan, bucketname=databucket):
             with gzip.open(sdmpath, 'rb') as fin:
                 with open(sdmpath.rstrip('.gz'), 'wb') as fout:
                     shutil.copyfileobj(fin, fout)
+            os.remove(sdmpath)
     else:
         print('File {} already exists'.format(sdmpath.rstrip('.gz')))
 
+    return sdmpath.rstrip('.gz')
 
 @cli.command()
 @click.argument('sdmfile')
@@ -88,10 +90,7 @@ def search(sdmfile, scan, paramfile):
     if not os.path.exists(sdmfile + '.GN'): copygain(sdmfile, bucketname=databucket)
 
     # if data not present, download it
-    scans = getscans(sdmfile, bucketname=databucket)
-    sdmpath = findbdf(sdmfile, scans[scan])
-    if not os.path.exists(sdmpath.rstrip('.gz')):
-        copyscan(sdmfile, scan, databucket)
+    sdmpath = copyscan(sdmfile, scan, databucket)
         
     d = rt.set_pipeline(sdmfile, scan, paramfile=paramfile,
                         fileroot=sdmfile, nologfile=True)
